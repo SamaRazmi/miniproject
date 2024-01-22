@@ -90,3 +90,8 @@ const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 });
+
+// Unknown endpoint handling
+app.use((request, response) => {
+  response.status(404).json({ error: 'unknown endpoint' });
+});
