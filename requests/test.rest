@@ -1,1 +1,17 @@
 GET http://localhost:3001/api/currency/
+
+GET http://localhost:3001/api/currency/1
+
+POST http://localhost:3001/api/currency
+Content-Type: application/json
+
+{
+  "id": 3,
+  "currencyCode": "EUR",
+  "country": "Eurozone",
+  "conversionRate": 0.85
+}
+
+PUT http://localhost:3001/api/currency/2/0.8
+
+DELETE http://localhost:3001/api/currency/1
