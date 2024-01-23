@@ -6,10 +6,10 @@ POST http://localhost:3001/api/currency
 Content-Type: application/json
 
 {
-  "id": 3,
-  "currencyCode": "EUR",
-  "country": "Eurozone",
-  "conversionRate": 0.85
+  "id": 4,
+  "currencyCode": "GBP",
+  "country": "United Kingdom",
+  "conversionRate": 0.69
 }
 
 PUT http://localhost:3001/api/currency/2/0.8
