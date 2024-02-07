@@ -1,11 +1,14 @@
+require('dotenv').config();
 const express = require('express');
+const { json } = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const app = express();
+const Currency = require('./config'); // Import the Currency model from config.js
 
+const app = express();
 // Setup for CORS, JSON parsing, and Morgan middleware
-app.use(cors());
-app.use(express.json());
+//app.use(cors());
+//app.use(express.json());
 //app.use(morgan('dev'));
 
 // Morgan middleware for logging with custom format
@@ -24,6 +27,10 @@ app.use(
   })
 );
 
+// Setup for CORS, JSON parsing, and Morgan middleware
+app.use(cors());
+app.use(json());
+
 // Import routes
 const currencyRoutes = require('./routes/currencyRoutes');
 
@@ -31,7 +38,7 @@ const currencyRoutes = require('./routes/currencyRoutes');
 app.use('/api/currency', currencyRoutes);
 
 // Server listening on port 3001
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 });
