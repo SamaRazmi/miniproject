@@ -1,73 +1,78 @@
-const currencies = [
-  {
-    id: 1,
-    currencyCode: 'CDN',
-    country: 'Canada',
-    conversionRate: 1,
-  },
-  {
-    id: 2,
-    currencyCode: 'USD',
-    country: 'United States of America',
-    conversionRate: 0.75,
-  },
-];
+const Currency = require('../models/Currency');
+const Country = require('../models/Country');
 
 // GET Endpoint to retrieve all currencies
-const getCurrencies = (request, response) => {
-  response.json(currencies);
+const getCurrencies = async (request, response) => {
+  try {
+    const currencies = await Currency.findAll({ include: Country });
+    response.json(currencies);
+  } catch (error) {
+    console.error('Error fetching currencies:', error);
+    response.status(500).json({ error: 'Internal Server Error' });
+  }
 };
 
 // GET:id Endpoint to retrieve a specific currency by ID
-const getCurrencyById = (request, response) => {
+const getCurrencyById = async (request, response) => {
   const id = parseInt(request.params.id);
-  const currency = currencies.find((c) => c.id === id);
-  if (currency) {
-    response.json(currency);
-  } else {
-    response.status(404).send('Currency not found');
+  try {
+    const currency = await Currency.findByPk(id, { include: Country });
+    if (currency) {
+      response.json(currency);
+    } else {
+      response.status(404).send('Currency not found');
+    }
+  } catch (error) {
+    console.error('Error fetching currency by ID:', error);
+    response.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
 // POST Endpoint to create a new currency
-const createCurrency = (request, response) => {
+const createCurrency = async (request, response) => {
   const newCurrency = request.body;
-  if (
-    !newCurrency ||
-    !newCurrency.id ||
-    !newCurrency.currencyCode ||
-    !newCurrency.country ||
-    !newCurrency.conversionRate
-  ) {
-    response.status(400).json({ error: 'content missing' });
-  } else {
-    currencies.push(newCurrency);
-    response.json(newCurrency);
+  try {
+    const createdCurrency = await Currency.create(newCurrency);
+    response.json(createdCurrency);
+  } catch (error) {
+    console.error('Error creating currency:', error);
+    response.status(400).json({ error: 'Bad Request' });
   }
 };
 
 // PUT:id Endpoint to update the conversion rate of a currency
-const updateCurrency = (request, response) => {
+const updateCurrency = async (request, response) => {
   const id = parseInt(request.params.id);
   const newRate = parseFloat(request.params.newRate);
-  const currency = currencies.find((c) => c.id === id);
-  if (currency) {
-    currency.conversionRate = newRate;
-    response.json(currency);
-  } else {
-    response.status(404).send('Currency not found');
+  try {
+    const currency = await Currency.findByPk(id);
+    if (currency) {
+      currency.conversionRate = newRate;
+      await currency.save();
+      response.json(currency);
+    } else {
+      response.status(404).send('Currency not found');
+    }
+  } catch (error) {
+    console.error('Error updating currency:', error);
+    response.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
 // DELETE:id Endpoint to delete a currency by ID
-const deleteCurrency = (request, response) => {
+const deleteCurrency = async (request, response) => {
   const id = parseInt(request.params.id);
-  const index = currencies.findIndex((c) => c.id === id);
-  if (index !== -1) {
-    currencies.splice(index, 1);
-    response.sendStatus(204);
-  } else {
-    response.status(404).send('Currency not found');
+  try {
+    const currency = await Currency.findByPk(id);
+    if (currency) {
+      await currency.destroy();
+      response.sendStatus(204);
+    } else {
+      response.status(404).send('Currency not found');
+    }
+  } catch (error) {
+    console.error('Error deleting currency:', error);
+    response.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
